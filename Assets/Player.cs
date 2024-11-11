@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     private BoxCollider2D box_collider;
     private Rigidbody2D rb;
     private float speed = 10f;
+    public GameObject projectile_prefab;
 
     private void Start()
     {
@@ -20,6 +21,19 @@ public class Player : MonoBehaviour
     private void Update()
     {
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, Camera.main.transform.position.z);
+        if(Input.GetMouseButtonDown(0))
+        {
+            // Subtracts to make (0, 0) the center of the screen which is the player
+            Vector3 player_to_mouse = Input.mousePosition;
+            player_to_mouse.x -= Screen.width / 2;
+            player_to_mouse.y -= Screen.height / 2;
+            player_to_mouse.Normalize();
+            GameObject obj = Instantiate(projectile_prefab);
+            obj.transform.position = transform.position + player_to_mouse * 0.75f;
+            Projectile projectile = obj.GetComponent<Projectile>();
+            projectile.direction = player_to_mouse;
+            projectile.speed = 24;
+        }
     }
 
     private void FixedUpdate()
