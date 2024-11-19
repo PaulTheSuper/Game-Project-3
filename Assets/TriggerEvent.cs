@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,6 +30,15 @@ public class TriggerEvent : MonoBehaviour
             return;
         }
     }
+    
+    public void SpawnPrefab(GameObject prefab)
+    {
+        GameObject spawned = Instantiate(prefab);
+        spawned.transform.position += transform.position;
+    }
 
-
+    public void ToggleActive(GameObject obj)
+    {
+        obj.SetActive(!obj.activeSelf);
+    }
 }

@@ -19,6 +19,10 @@ public class Moving : MonoBehaviour
         {
             checkpoints_relative[i] = new Vector2(checkpoints_relative[i].x + transform.position.x, checkpoints_relative[i].y + transform.position.y);
         }
+        if (checkpoints_relative[current_checkpoint].Equals(transform.position))
+        {
+            current_checkpoint++;
+        }
     }
 
     private void FixedUpdate()

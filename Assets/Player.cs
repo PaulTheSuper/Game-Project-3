@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.PlasticSCM.Editor.WebApi;
 using Unity.VisualScripting;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     private static Player instance;
+    public int current_level = 1;
     private BoxCollider2D box_collider;
     private Rigidbody2D rb;
     private float speed = 10f;
@@ -16,6 +19,7 @@ public class Player : MonoBehaviour
         instance = this;
         box_collider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
+        ResetLevel();
     }
 
     private void Update()
@@ -85,6 +89,16 @@ public class Player : MonoBehaviour
     public static Player GetPlayer()
     {
         return Player.instance;
+    }
+
+    public static void ResetLevel() {
+        Player.instance.transform.position = Level.levels[Player.instance.current_level].GetSpawnLocation();
+    }
+
+    public static void AdvanceLevel()
+    {
+        Player.instance.current_level = Mathf.Min(Player.instance.current_level + 1, Level.levels.Count);
+        ResetLevel();
     }
 
 }
