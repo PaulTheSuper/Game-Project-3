@@ -22,6 +22,7 @@ public class Moving : MonoBehaviour
         if (checkpoints_relative[current_checkpoint].Equals(transform.position))
         {
             current_checkpoint++;
+            CalculateDistanceDifference();
         }
     }
 
