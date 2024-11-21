@@ -9,7 +9,6 @@ public class Pusher : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Test");
         if (collision.gameObject.Equals(Player.GetPlayer().gameObject))
         {
             Player.AddVelocity(acceleration);

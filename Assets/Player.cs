@@ -61,6 +61,19 @@ public class Player : MonoBehaviour
         }
         move_direction.Normalize();
         Vector2 new_position = rb.position;
+        // Platform movement
+        Collider2D[] overlap_results = Physics2D.OverlapBoxAll(transform.position, box_collider.size, 0);
+        bool on_platform = false;
+        for (int i = 0; i < overlap_results.Length; i++)
+        {
+            Platform platform = overlap_results[i].GetComponent<Platform>();
+            if (platform != null)
+            {
+                on_platform = true;
+                new_position += platform.GetMovement();
+                break;
+            }
+        }
         // Different speed and friction depending on surface
         rb.velocity += move_direction * speed;
         Vector2 movement = rb.velocity * Time.fixedDeltaTime;
@@ -88,6 +101,21 @@ public class Player : MonoBehaviour
         box_collider.enabled = true;
         Physics2D.queriesHitTriggers = true;
         rb.MovePosition(new_position);
+        box_collider.enabled = false;
+        Physics2D.queriesHitTriggers = false;
+        // Reset if the player is stuck in a wall
+        if (Physics2D.OverlapBox(transform.position, box_collider.size, 0) != null)
+        {
+            Debug.Log("Stuck in a wall, resetting level");
+            ResetLevel();
+        }
+        box_collider.enabled = true;
+        Physics2D.queriesHitTriggers = true;
+        // Reset if the player has no floor beneath them
+        if (!on_platform && MainTilemap.GetMainTilemap().GetTile(Vector3Int.FloorToInt(transform.position)) == null)
+        {
+            ResetLevel();
+        }
     }
 
     public static void AddVelocity(Vector2 velocity)
@@ -98,6 +126,17 @@ public class Player : MonoBehaviour
     public static void AddPosition(Vector3 position)
     {
         Player.GetPlayer().transform.position += position;
+    }
+
+    // For UnityEvent since Vectors aren't supported
+    public static void AddXPosition(float x_position)
+    {
+        AddPosition(new Vector3(x_position, 0, 0));
+    }
+
+    public static void AddYPosition(float y_position)
+    {
+        AddPosition(new Vector3(0, y_position, 0));
     }
 
     public static Player GetPlayer()

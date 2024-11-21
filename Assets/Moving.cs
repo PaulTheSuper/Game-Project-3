@@ -6,13 +6,17 @@ public class Moving : MonoBehaviour
 {
     public List<Vector2> checkpoints_relative = new List<Vector2>();
     public List<float> checkpoints_speed_multiplier = new List<float>();
-    private Rigidbody2D rb;
-    private int current_checkpoint = 0;
-    private float time_moving = 0;
-    private float distance_difference = 0;
+    protected Rigidbody2D rb;
+    protected int current_checkpoint = 0;
+    protected float time_moving = 0;
+    protected float distance_difference = 0;
 
     private void Start()
     {
+        if(checkpoints_relative.Count == 0)
+        {
+            return;
+        }
         rb = GetComponent<Rigidbody2D>();
         CalculateDistanceDifference();
         for (int i = 0; i < checkpoints_relative.Count; i++)
@@ -28,9 +32,18 @@ public class Moving : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float completion_amount = Mathf.Min(1, (GetSpeedMultiplier() * time_moving) / distance_difference);
+        if (checkpoints_relative.Count == 0)
+        {
+            return;
+        }
+        DoMovement();
+    }
+
+    protected virtual void DoMovement()
+    {
+        float completion_amount = GetCompletionAmount();
         Vector2 new_position = Vector2.Lerp(checkpoints_relative[GetPreviousCheckpoint()], checkpoints_relative[current_checkpoint], completion_amount);
-        rb.MovePosition(new_position);
+        MoveToPosition(new_position);
         if (completion_amount == 1)
         {
             current_checkpoint = (current_checkpoint + 1) % checkpoints_relative.Count;
@@ -40,12 +53,31 @@ public class Moving : MonoBehaviour
         time_moving += Time.fixedDeltaTime;
     }
 
-    private void CalculateDistanceDifference()
+    protected void MoveToPosition(Vector3 position)
+    {
+        if(GetSpeedMultiplier() == -1)
+        {
+            transform.position = position;
+            return;
+        }
+        rb.MovePosition(position);
+    }
+
+    protected float GetCompletionAmount()
+    {
+        if (GetSpeedMultiplier() == -1)
+        {
+            return 1;
+        }
+        return Mathf.Min(1, (GetSpeedMultiplier() * time_moving) / distance_difference);
+    }
+
+    protected void CalculateDistanceDifference()
     {
         distance_difference = (checkpoints_relative[GetPreviousCheckpoint()] - checkpoints_relative[current_checkpoint]).magnitude;
     }
 
-    private float GetSpeedMultiplier()
+    protected float GetSpeedMultiplier()
     {
         if(current_checkpoint > checkpoints_speed_multiplier.Count - 1)
         {
@@ -54,7 +86,7 @@ public class Moving : MonoBehaviour
         return checkpoints_speed_multiplier[current_checkpoint];
     }
 
-    private int GetPreviousCheckpoint() {
+    protected int GetPreviousCheckpoint() {
         int previous = current_checkpoint - 1;
         if(previous < 0)
         {
