@@ -5,8 +5,8 @@ using UnityEngine;
 public class VisibleTrigger : TriggerEvent
 {
     public bool toggle = false;
-    private bool activated = false;
-    private SpriteRenderer sprite_renderer;
+    protected bool activated = false;
+    protected SpriteRenderer sprite_renderer;
 
     private void Start()
     {
