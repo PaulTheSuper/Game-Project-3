@@ -84,14 +84,15 @@ public class Player : MonoBehaviour
         Physics2D.queriesHitTriggers = false;
         while (movement.magnitude > 0)
         {
-            // Move at an exact floating point number so we have consistent collision results 1/2^8 (attempt at not being stuck in walls)
-            float step_move_x = Mathf.Clamp(movement.x, -0.00390625f, 0.00390625f);
-            float step_move_y = Mathf.Clamp(movement.y, -0.00390625f, 0.00390625f);
-            if (Mathf.Abs(step_move_x) == 0.00390625f && Physics2D.OverlapBox(new_position + new Vector2(step_move_x, 0), box_collider.size, 0) == null)
+            // Move at an exact floating point number so we have consistent collision results 1/2^6 (attempt at not being stuck in walls)
+            float precision = 0.015625f;
+            float step_move_x = Mathf.Clamp(movement.x, -precision, precision);
+            float step_move_y = Mathf.Clamp(movement.y, -precision, precision);
+            if (Mathf.Abs(step_move_x) == precision && Physics2D.OverlapBox(new_position + new Vector2(step_move_x, 0), box_collider.size, 0) == null)
             {
                 new_position.x += step_move_x;
             }
-            if (Mathf.Abs(step_move_y) == 0.00390625f && Physics2D.OverlapBox(new_position + new Vector2(0, step_move_y), box_collider.size, 0) == null)
+            if (Mathf.Abs(step_move_y) == precision && Physics2D.OverlapBox(new_position + new Vector2(0, step_move_y), box_collider.size, 0) == null)
             {
                 new_position.y += step_move_y;
             }
