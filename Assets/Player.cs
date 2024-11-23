@@ -11,7 +11,6 @@ public class Player : MonoBehaviour
     public int current_level = 1;
     private BoxCollider2D box_collider;
     private Rigidbody2D rb;
-    private float speed = 10f;
     public GameObject projectile_prefab;
 
     private void Start()
@@ -61,24 +60,36 @@ public class Player : MonoBehaviour
         }
         move_direction.Normalize();
         Vector2 new_position = rb.position;
+        float speed = 10;
+        float friction_modifier = 0;
         // Platform movement
         Collider2D[] overlap_results = Physics2D.OverlapBoxAll(transform.position, box_collider.size, 0);
         bool on_platform = false;
+        bool on_ground = false;
         for (int i = 0; i < overlap_results.Length; i++)
         {
             Platform platform = overlap_results[i].GetComponent<Platform>();
-            if (platform != null)
+            if (platform != null && !on_platform)
             {
                 on_platform = true;
-                new_position += platform.GetMovement();
-                break;
+                if (platform.carries_player)
+                {
+                    new_position += platform.GetMovement();
+                }
+            }
+            Ground ground = overlap_results[i].GetComponent<Ground>();
+            if(ground != null && !on_ground)
+            {
+                speed = ground.GetSpeed();
+                friction_modifier = ground.GetFrictionModifier();
+                on_ground = true;
             }
         }
         // Different speed and friction depending on surface
         rb.velocity += move_direction * speed;
         Vector2 movement = rb.velocity * Time.fixedDeltaTime;
         // Friction (0 velocity retained by default)
-        rb.velocity *= 0f;
+        rb.velocity *= friction_modifier;
         // Pretty easily extendable to 3d which is cool
         box_collider.enabled = false;
         Physics2D.queriesHitTriggers = false;
@@ -113,7 +124,7 @@ public class Player : MonoBehaviour
         box_collider.enabled = true;
         Physics2D.queriesHitTriggers = true;
         // Reset if the player has no floor beneath them
-        if (!on_platform && MainTilemap.GetMainTilemap().GetTile(Vector3Int.FloorToInt(transform.position)) == null)
+        if (!on_platform && !on_ground && MainTilemap.GetMainTilemap().GetTile(Vector3Int.FloorToInt(transform.position)) == null)
         {
             ResetLevel();
         }
@@ -146,6 +157,10 @@ public class Player : MonoBehaviour
     }
 
     public static void ResetLevel() {
+        if(Player.instance.current_level == -1)
+        {
+            Player.instance.current_level = Level.levels.Count;
+        }
         Player.instance.transform.position = Level.levels[Player.instance.current_level].GetSpawnLocation();
     }
 

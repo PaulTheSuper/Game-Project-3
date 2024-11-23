@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Platform : Moving
 {
+    public bool carries_player = true;
     private Vector2 movement = Vector2.zero;
 
     protected override void DoMovement()
