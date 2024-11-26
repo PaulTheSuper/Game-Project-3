@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Ground : MonoBehaviour
+public class Ground : MonoBehaviour
 {
-    protected float speed;
-    protected float friction_modifier;
+    protected float speed = 10;
+    protected float friction_modifier = 0;
 
     public float GetSpeed()
     {
