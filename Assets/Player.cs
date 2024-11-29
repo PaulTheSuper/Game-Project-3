@@ -66,6 +66,7 @@ public class Player : MonoBehaviour
         Collider2D[] overlap_results = Physics2D.OverlapBoxAll(transform.position, box_collider.size, 0);
         bool on_platform = false;
         bool on_ground = false;
+        bool on_rotating = false;
         for (int i = 0; i < overlap_results.Length; i++)
         {
             Platform platform = overlap_results[i].GetComponent<Platform>();
@@ -83,6 +84,21 @@ public class Player : MonoBehaviour
                 speed = ground.GetSpeed();
                 friction_modifier = ground.GetFrictionModifier();
                 on_ground = true;
+            }
+            Rotating rotating = overlap_results[i].GetComponent<Rotating>();
+            if (rotating != null && !on_rotating)
+            {
+                Vector3 difference = transform.position - rotating.transform.position;
+                difference.z = 0;
+                float radius = difference.magnitude;
+                float angle = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
+                angle += rotating.rotation_per_second * Time.fixedDeltaTime;
+                Vector2 rotating_new_position = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius;
+                rotating_new_position.x += rotating.transform.position.x;
+                rotating_new_position.y += rotating.transform.position.y;
+                Vector2 rotating_movement = rotating_new_position - rb.position;
+                new_position += rotating_movement;
+                on_rotating = true;
             }
         }
         // Different speed and friction depending on surface
