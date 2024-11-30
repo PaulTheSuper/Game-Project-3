@@ -49,6 +49,16 @@ public class VisibleTrigger : TriggerEvent
         }
     }
 
+    public void ToggleVisibleTrigger()
+    {
+        activated = !activated;
+    }
+
+    public bool IsActivated()
+    {
+        return activated;
+    }
+
     public void DeactivateAfterSeconds(float time)
     {
         if (!activated)
