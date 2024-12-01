@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     public int current_level = 1;
     private BoxCollider2D box_collider;
     private Rigidbody2D rb;
+    private int ticks_stuck_in_wall = 0;
     public GameObject projectile_prefab;
     public AudioClip shoot_audio;
     public AudioClip advance_audio;
@@ -59,6 +60,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Vector2 last_position = rb.position;
         Vector2 move_direction = new Vector2();
         if(Input.GetKey(KeyCode.W))
         {
@@ -152,8 +154,18 @@ public class Player : MonoBehaviour
         // Reset if the player is stuck in a wall
         if (Physics2D.OverlapBox(transform.position, box_collider.size, 0) != null)
         {
-            Debug.Log("Stuck in a wall, resetting level");
-            ResetLevel();
+            Debug.Log("Stuck in a wall, moving back");
+            rb.MovePosition(last_position);
+            ticks_stuck_in_wall++;
+            if(ticks_stuck_in_wall > 10)
+            {
+                Debug.Log("Stuck in a wall, resetting level");
+                ResetLevel();
+            }
+        }
+        else
+        {
+            ticks_stuck_in_wall = 0;
         }
         box_collider.enabled = true;
         Physics2D.queriesHitTriggers = true;
