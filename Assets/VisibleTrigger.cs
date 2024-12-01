@@ -39,12 +39,16 @@ public class VisibleTrigger : TriggerEvent
         {
             activated = true;
             trigger.Invoke();
+            AudioSource audio = Player.GetPlayer().gameObject.GetComponent<AudioSource>();
+            audio.PlayOneShot(Player.GetPlayer().toggle_audio);
             return;
         }
         if (trigger_flags.HasFlag(TriggerFlags.Projectile) && collision.gameObject.GetComponent<Projectile>() != null)
         {
             activated = true;
             trigger.Invoke();
+            AudioSource audio = Player.GetPlayer().gameObject.GetComponent<AudioSource>();
+            audio.PlayOneShot(Player.GetPlayer().toggle_audio);
             return;
         }
     }

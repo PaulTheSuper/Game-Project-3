@@ -12,13 +12,17 @@ public class Player : MonoBehaviour
     private BoxCollider2D box_collider;
     private Rigidbody2D rb;
     public GameObject projectile_prefab;
+    public AudioClip shoot_audio;
+    public AudioClip advance_audio;
+    public AudioClip reset_audio;
+    public AudioClip toggle_audio;
 
     private void Start()
     {
         instance = this;
         box_collider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
-        ResetLevel();
+        ResetLevelNoSound();
     }
 
     private void Update()
@@ -36,6 +40,8 @@ public class Player : MonoBehaviour
             Projectile projectile = obj.GetComponent<Projectile>();
             projectile.direction = player_to_mouse;
             projectile.speed = 24;
+            AudioSource audio = Player.GetPlayer().gameObject.GetComponent<AudioSource>();
+            audio.PlayOneShot(Player.GetPlayer().shoot_audio);
         }
     }
 
@@ -172,8 +178,20 @@ public class Player : MonoBehaviour
         return Player.instance;
     }
 
-    public static void ResetLevel() {
-        if(Player.instance.current_level == -1)
+    public static void ResetLevel()
+    {
+        if (Player.instance.current_level == -1)
+        {
+            Player.instance.current_level = Level.levels.Count;
+        }
+        Player.instance.transform.position = Level.levels[Player.instance.current_level].GetSpawnLocation();
+        AudioSource audio = Player.GetPlayer().gameObject.GetComponent<AudioSource>();
+        audio.PlayOneShot(Player.GetPlayer().reset_audio);
+    }
+
+    public static void ResetLevelNoSound()
+    {
+        if (Player.instance.current_level == -1)
         {
             Player.instance.current_level = Level.levels.Count;
         }
@@ -182,8 +200,10 @@ public class Player : MonoBehaviour
 
     public static void AdvanceLevel()
     {
+        AudioSource audio = Player.GetPlayer().gameObject.GetComponent<AudioSource>();
+        audio.PlayOneShot(Player.GetPlayer().advance_audio);
         Player.instance.current_level = Mathf.Min(Player.instance.current_level + 1, Level.levels.Count);
-        ResetLevel();
+        ResetLevelNoSound();
     }
 
 }
