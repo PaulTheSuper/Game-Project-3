@@ -6,6 +6,8 @@ public class Level : MonoBehaviour
 {
     public static Dictionary<int, Level> levels = new Dictionary<int, Level>();
     public int level_id;
+    public string intro_name = "";
+    public string intro_description = "";
     private Vector3 spawn_location_relative = new Vector3(0.5f, -0.5f, 0);
      
     private void Awake()
@@ -25,5 +27,10 @@ public class Level : MonoBehaviour
     public Vector3 GetSpawnLocation()
     {
         return spawn_location_relative;
+    }
+
+    public static Level GetCurrentLevel()
+    {
+        return levels[Player.GetPlayer().current_level];
     }
 }

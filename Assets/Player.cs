@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
         box_collider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         ResetLevelNoSound();
+        LevelIntro.DisplayLevelText();
     }
 
     private void Update()
@@ -42,6 +43,19 @@ public class Player : MonoBehaviour
             projectile.speed = 24;
             AudioSource audio = Player.GetPlayer().gameObject.GetComponent<AudioSource>();
             audio.PlayOneShot(Player.GetPlayer().shoot_audio);
+        }
+        if(Input.GetKey(KeyCode.LeftShift))
+        {
+            if(Input.GetKeyDown(KeyCode.O))
+            {
+                current_level = Mathf.Max(1, current_level - 1);
+                ResetLevel();
+                LevelIntro.DisplayLevelText();
+            }
+            else if(Input.GetKeyDown(KeyCode.P))
+            {
+                AdvanceLevel();
+            }
         }
     }
 
@@ -204,6 +218,7 @@ public class Player : MonoBehaviour
         audio.PlayOneShot(Player.GetPlayer().advance_audio);
         Player.instance.current_level = Mathf.Min(Player.instance.current_level + 1, Level.levels.Count);
         ResetLevelNoSound();
+        LevelIntro.DisplayLevelText();
     }
 
 }
