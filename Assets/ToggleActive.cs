@@ -23,7 +23,8 @@ public class ToggleActive : MonoBehaviour
         {
             current_index = (current_index + 1) % toggle_time.Count;
             UpdateState();
-            current_time_left = toggle_time[current_index];
+            // Add whatever is left in the current time left that is now negative to make stuff not desync as hard?
+            current_time_left = toggle_time[current_index] + current_time_left;
         }
     }
 
