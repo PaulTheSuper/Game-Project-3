@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     public AudioClip advance_audio;
     public AudioClip reset_audio;
     public AudioClip toggle_audio;
+    private float reset_audio_delay = 0;
 
     private void Start()
     {
@@ -56,6 +57,7 @@ public class Player : MonoBehaviour
                 AdvanceLevel();
             }
         }
+        reset_audio_delay -= Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -209,8 +211,13 @@ public class Player : MonoBehaviour
             Player.instance.current_level = Level.levels.Count;
         }
         Player.instance.transform.position = Level.levels[Player.instance.current_level].GetSpawnLocation();
+        if(Player.GetPlayer().reset_audio_delay > 0)
+        {
+            return;
+        }
         AudioSource audio = Player.GetPlayer().gameObject.GetComponent<AudioSource>();
         audio.PlayOneShot(Player.GetPlayer().reset_audio);
+        Player.GetPlayer().reset_audio_delay = 1;
     }
 
     public static void ResetLevelNoSound()
