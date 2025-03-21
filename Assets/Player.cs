@@ -39,7 +39,22 @@ public class Player : MonoBehaviour
     private void Update()
     {
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, Camera.main.transform.position.z);
-        if(Input.GetMouseButtonDown(0))
+
+        ///added camera adjustments for certain levels
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            Camera.main.orthographicSize = 10;
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            Camera.main.orthographicSize = 13;
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            Camera.main.orthographicSize = 16;
+        }
+
+        if (Input.GetMouseButtonDown(0))
         {
             // Subtracts to make (0, 0) the center of the screen which is the player
             Vector3 player_to_mouse = Input.mousePosition;
