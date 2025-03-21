@@ -5,8 +5,18 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private static Player instance;
+    /// <summary>
+    /// primative data types
+    /// </summary>
+    /// 
+    private List<GameObject> activeProjectiles = new List<GameObject>();
+    private const int maxProjectiles = 3;
+
+
+    public static Player instance;
     public int current_level = 1;
+    public int level_skips = 0;
+    public int skipped = 0;
     private BoxCollider2D box_collider;
     private Rigidbody2D rb;
     private int ticks_stuck_in_wall = 0;
@@ -54,7 +64,14 @@ public class Player : MonoBehaviour
             }
             else if(Input.GetKeyDown(KeyCode.P))
             {
-                AdvanceLevel();
+                if (level_skips != 0)
+                {
+                    UseSkip();
+                    AdvanceLevel();
+                    
+                    ///level_skips = level_skips - 1;
+                }
+                
             }
         }
         reset_audio_delay -= Time.deltaTime;
@@ -154,6 +171,9 @@ public class Player : MonoBehaviour
         box_collider.enabled = false;
         Physics2D.queriesHitTriggers = false;
         // Reset if the player is stuck in a wall
+        /// this is an algorithm to check if the player is stuck and if they are it resets the level
+
+
         if (Physics2D.OverlapBox(transform.position, box_collider.size, 0) != null)
         {
             Debug.Log("Stuck in a wall, moving back");
@@ -206,6 +226,7 @@ public class Player : MonoBehaviour
 
     public static void ResetLevel()
     {
+      ///List<Level> levels is a collection
         if (Player.instance.current_level == -1)
         {
             Player.instance.current_level = Level.levels.Count;
@@ -218,6 +239,7 @@ public class Player : MonoBehaviour
         AudioSource audio = Player.GetPlayer().gameObject.GetComponent<AudioSource>();
         audio.PlayOneShot(Player.GetPlayer().reset_audio);
         Player.GetPlayer().reset_audio_delay = 1;
+        
     }
 
     public static void ResetLevelNoSound()
@@ -228,14 +250,38 @@ public class Player : MonoBehaviour
         }
         Player.instance.transform.position = Level.levels[Player.instance.current_level].GetSpawnLocation();
     }
+    /// <summary>
+    /// System made by me to set a limit for skips the player can use
+    /// </summary>
+    public static void UseSkip()
+    {
+        Player.instance.level_skips = Mathf.Min(Player.instance.level_skips - 1);
+        Debug.Log("Used skip");
+        Player.instance.skipped = 1;
+    }
 
     public static void AdvanceLevel()
     {
         AudioSource audio = Player.GetPlayer().gameObject.GetComponent<AudioSource>();
         audio.PlayOneShot(Player.GetPlayer().advance_audio);
+
+
+        /// Level Advancement Algorithm that resets player position and makes a sound on level advanced
         Player.instance.current_level = Mathf.Min(Player.instance.current_level + 1, Level.levels.Count);
         ResetLevelNoSound();
+
+        ///my addition that if a level is beaten without being skipped, you gain an extra skip
+        if (Player.instance.skipped == 0)
+        {
+            Player.instance.level_skips = Mathf.Min(Player.instance.level_skips + 1);
+        }
+        Player.instance.skipped = 0;
         LevelIntro.DisplayLevelText();
+        
+        Debug.Log("Level Advanced");
+
     }
+
+    
 
 }

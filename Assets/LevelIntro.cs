@@ -7,6 +7,7 @@ public class LevelIntro : MonoBehaviour
 {
     private static LevelIntro instance;
     private TextMeshProUGUI text;
+    private TextMeshProUGUI skips;
     private float fade_time = 10000;
 
     private void Start()
@@ -27,12 +28,18 @@ public class LevelIntro : MonoBehaviour
         {
             percent = (fade_time - 5) / 3;
         }
-        text.fontMaterial.SetColor("_FaceColor", Color.Lerp(Color.white, Color.clear, percent));
+        text.fontMaterial.SetColor("_FaceColor", Color.Lerp(Color.red, Color.clear, percent));
     }
 
     public static void DisplayLevelText()
     {
+       
         instance.fade_time = 0;
-        instance.text.text = Level.GetCurrentLevel().intro_name + "\n" + Level.GetCurrentLevel().intro_description;
+        instance.text.text = Level.GetCurrentLevel().intro_name + "\n" + Level.GetCurrentLevel().intro_description + "" +
+            " " +
+
+
+            "Skips Left: " + Player.instance.level_skips;
+        
     }
 }
