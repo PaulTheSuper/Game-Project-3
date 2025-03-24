@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+
+
+/// <summary>
+/// Added and explained data structure at 290
+/// Enhanced gameplay at 50
+/// </summary>
 public class Player : MonoBehaviour
 {
     /// <summary>
